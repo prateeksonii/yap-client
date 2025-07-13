@@ -1,0 +1,18 @@
+{
+	"files.watcherExclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"search.exclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"files.readonlyInclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"eslint.rules.customizations": [
+		{
+			"rule": "@stylistic/*",
+			"fixable": true,
+			"severity": "off"
+		}
+	]
+}
