@@ -23,7 +23,7 @@ function App() {
           </p>
         </div>
         <div>
-          <Tabs value={currentTab} defaultValue="signin" className="mx-auto w-[400px]">
+          <Tabs value={currentTab} onValueChange={value => setCurrentTab(value as 'signin' | 'signup')} className="mx-auto w-[400px]">
             <TabsList>
               <TabsTrigger value="signin">Sign in</TabsTrigger>
               <TabsTrigger value="signup">Sign up</TabsTrigger>
