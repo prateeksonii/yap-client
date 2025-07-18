@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet, redirect } from '@tanstack/react-router'
+import { createRootRoute, isRedirect, Outlet, redirect } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { Toaster } from 'sonner'
 import axios from '@/lib/axios'
@@ -15,8 +15,6 @@ export const Route = createRootRoute({
       })
 
       if (res.status === 200) {
-        // ctx.context.user = res.data;
-
         if (ctx.location.href === '/') {
           throw redirect({
             to: '/app',
@@ -24,31 +22,15 @@ export const Route = createRootRoute({
         }
       }
     }
-    catch {
-      if (ctx.location.href === '/')
+    catch (err) {
+      if (isRedirect(err))
+        throw err
+      if (ctx.location.href === '/') // avoid infinite redirects
         return
       throw redirect({
-        // search: {
-        //   redirect: ctx.location.href,
-        // },
         to: '/',
       })
     }
-
-    // if (ctx.location.href === '/') {
-    //   throw redirect({
-    //     to: '/app',
-    //   })
-    // }
-
-    // if (!token) {
-    //   throw redirect({
-    //     search: {
-    //       redirect: ctx.location.href,
-    //     },
-    //     to: '/',
-    //   })
-    // }
   },
   component: () => (
     <>
