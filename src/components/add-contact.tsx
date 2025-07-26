@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Search } from 'lucide-react'
 import React, { useState } from 'react'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { useAppStore } from '@/lib/stores'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Separator } from './ui/separator'
@@ -22,13 +23,10 @@ async function getUsersByQuery(query: string) {
   return res.data
 }
 
-interface Props {
-  onUserSelected: (user: any) => void
-}
-
-export default function AddContact({ onUserSelected }: Props) {
+export default function AddContact() {
   const [query, setQuery] = useState('')
   const debouncedInput = useDebouncedValue(query, 500)
+  const appStore = useAppStore()
 
   const { data, error, isLoading } = useQuery({
     queryFn: () => getUsersByQuery(debouncedInput),
@@ -36,6 +34,11 @@ export default function AddContact({ onUserSelected }: Props) {
     staleTime: 5000 * 60,
     enabled: !!debouncedInput,
   })
+
+  const onUserSelected = (user: any) => {
+    appStore.setSelectedUser(user)
+    appStore.setSheetOpen(false)
+  }
 
   return (
     <>

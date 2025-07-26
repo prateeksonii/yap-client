@@ -2,10 +2,13 @@ import { createRootRoute, isRedirect, Outlet, redirect } from '@tanstack/react-r
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { Toaster } from 'sonner'
 import axios from '@/lib/axios'
+import { useAppStore } from '@/lib/stores'
 
 export const Route = createRootRoute({
   beforeLoad: async (ctx) => {
     const token = localStorage.getItem('yap_token')
+
+    const userStore = useAppStore.getState()
 
     try {
       const res = await axios.get('/users/me', {
@@ -15,6 +18,7 @@ export const Route = createRootRoute({
       })
 
       if (res.status === 200) {
+        userStore.setUser(res.data)
         if (ctx.location.href === '/') {
           throw redirect({
             to: '/app',
