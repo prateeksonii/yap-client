@@ -1,14 +1,24 @@
+import { useQuery } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
+import React from 'react'
+import { getUserChats } from '@/lib/api/chats'
 import { useAppStore } from '@/lib/stores'
 import { cn } from '@/lib/utils'
 import AddContact from './add-contact'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
+import { Separator } from './ui/separator'
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 
 export default function Sidebar() {
   const appStore = useAppStore()
+
+  const { data: chats } = useQuery({
+    queryFn: getUserChats,
+    queryKey: ['user_chats'],
+    initialData: [],
+  })
 
   return (
     <div className="shadow-lg p-4">
@@ -53,10 +63,24 @@ export default function Sidebar() {
       </div>
       {appStore.selectedUser && (
         <div
-          className="py-4 text-lg border-b border-b-foreground cursor-pointer"
+          className="py-4 text-lg cursor-pointer"
         >
+          <Separator className="mb-3" />
           {appStore.selectedUser.name}
+          <Separator className="mt-3" />
         </div>
+      )}
+      {/* // eslint-disable-next-line react/no-children-to-array */}
+      {React.Children.toArray(
+        chats.map((chat: any) => (
+          <div
+            className="py-4 text-lg cursor-pointer"
+          >
+            <Separator className="mb-3" />
+            {chat.contactName}
+            <Separator className="mt-3" />
+          </div>
+        )),
       )}
     </div>
   )

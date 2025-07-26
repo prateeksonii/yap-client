@@ -1,9 +1,8 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { getUserChats } from '@/lib/api/chats'
 import { sendMessage } from '@/lib/api/contacts'
 import { useAppStore } from '@/lib/stores'
 
@@ -13,12 +12,6 @@ export const Route = createFileRoute('/app/')({
 
 function RouteComponent() {
   const appStore = useAppStore()
-
-  useQuery({
-    queryFn: getUserChats,
-    queryKey: ['user_chats'],
-    initialData: [],
-  })
 
   const { mutate } = useMutation({
     mutationFn: sendMessage,
