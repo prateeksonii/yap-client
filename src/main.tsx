@@ -10,9 +10,13 @@ import reportWebVitals from './reportWebVitals.ts'
 import { routeTree } from './routeTree.gen.ts'
 import './styles.css'
 
+const queryClient = new QueryClient()
+
 // Create a new router instance
 const router = createRouter({
-  context: {},
+  context: {
+    queryClient,
+  },
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
   defaultStructuralSharing: true,
@@ -26,8 +30,6 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
-
-const queryClient = new QueryClient()
 
 // Render the app
 const rootElement = document.getElementById('app')

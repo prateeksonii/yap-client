@@ -1,10 +1,11 @@
-import { createRootRoute, isRedirect, Outlet, redirect } from '@tanstack/react-router'
+import type { MyRouterContext } from '@/lib/types'
+import { createRootRoute, createRootRouteWithContext, isRedirect, Outlet, redirect } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { Toaster } from 'sonner'
 import axios from '@/lib/axios'
 import { useAppStore } from '@/lib/stores'
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async (ctx) => {
     const token = localStorage.getItem('yap_token')
 

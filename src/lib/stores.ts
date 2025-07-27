@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
-interface User {
+export interface User {
   id: number
   name: string
   email: string
@@ -14,8 +14,8 @@ interface AppStore {
   setUser: (user: User) => void
   status: Status
   setStatus: (status: Status) => void
-  selectedUser: User | null
-  setSelectedUser: (user: User) => void
+  selectedUser: (User & { chatId?: number }) | null
+  setSelectedUser: (user: User & { chatId?: number }) => void
   sheetOpen: boolean
   setSheetOpen: (open: boolean) => void
 }

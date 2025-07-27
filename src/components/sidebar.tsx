@@ -61,7 +61,7 @@ export default function Sidebar() {
           </SheetContent>
         </Sheet>
       </div>
-      {appStore.selectedUser && (
+      {!chats.length && appStore.selectedUser && (
         <div
           className="py-4 text-lg cursor-pointer"
         >
@@ -70,18 +70,22 @@ export default function Sidebar() {
           <Separator className="mt-3" />
         </div>
       )}
-      {/* // eslint-disable-next-line react/no-children-to-array */}
-      {React.Children.toArray(
-        chats.map((chat: any) => (
-          <div
-            className="py-4 text-lg cursor-pointer"
-          >
-            <Separator className="mb-3" />
-            {chat.contactName}
-            <Separator className="mt-3" />
-          </div>
-        )),
-      )}
+      {chats.map((chat: any) => (
+        <div
+          key={chat.chatId}
+          className="py-4 text-lg cursor-pointer"
+          onClick={() => appStore.setSelectedUser({
+            id: chat.contactId,
+            name: chat.contactName,
+            email: chat.contactEmail,
+            chatId: chat.chatId,
+          })}
+        >
+          <Separator className="mb-3" />
+          {chat.contactName}
+          <Separator className="mt-3" />
+        </div>
+      ))}
     </div>
   )
 }
