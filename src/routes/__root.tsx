@@ -1,5 +1,5 @@
 import type { MyRouterContext } from '@/lib/types'
-import { createRootRoute, createRootRouteWithContext, isRedirect, Outlet, redirect } from '@tanstack/react-router'
+import { createRootRouteWithContext, isRedirect, Outlet, redirect } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { Toaster } from 'sonner'
 import axios from '@/lib/axios'
