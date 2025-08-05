@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import React, { useState } from 'react'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import axios from '@/lib/axios'
 import { useAppStore } from '@/lib/stores'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -11,7 +11,7 @@ import { SheetHeader, SheetTitle } from './ui/sheet'
 import { Skeleton } from './ui/skeleton'
 
 async function getUsersByQuery(query: string) {
-  const res = await axios.get('http://localhost:8000/api/v1/users/search', {
+  const res = await axios.get(`/users/search`, {
     params: {
       q: query,
     },
@@ -23,7 +23,20 @@ async function getUsersByQuery(query: string) {
   return res.data
 }
 
+async function createChat(contactId: number) {
+  const res = await axios.post('/chats', {
+    contactId,
+  }, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('yap_token')}`,
+    },
+  })
+
+  return res.data
+}
+
 export default function AddContact() {
+  const queryClient = useQueryClient()
   const [query, setQuery] = useState('')
   const debouncedInput = useDebouncedValue(query, 500)
   const appStore = useAppStore()
@@ -35,8 +48,18 @@ export default function AddContact() {
     enabled: !!debouncedInput,
   })
 
-  const onUserSelected = (user: any) => {
-    appStore.setSelectedUser(user)
+  const { mutateAsync } = useMutation({
+    mutationFn: createChat,
+    mutationKey: ['create_chat'],
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ['user_chats'],
+      })
+    },
+  })
+
+  const onUserSelected = async (user: any) => {
+    await mutateAsync(user.id)
     appStore.setSheetOpen(false)
   }
 

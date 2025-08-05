@@ -11,7 +11,7 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 
 async function getUserById(id: number): Promise<User> {
-  const res = await axios.get(`http://localhost:8000/api/v1/users/${id}`, {
+  const res = await axios.get(`/users/${id}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('yap_token')}`,
     },
@@ -21,7 +21,7 @@ async function getUserById(id: number): Promise<User> {
 }
 
 async function getChatMessages(chatId: number): Promise<Message[]> {
-  const res = await axios.get(`http://localhost:8000/api/v1/messages`, {
+  const res = await axios.get(`/messages`, {
     params: {
       chat_id: chatId,
     },

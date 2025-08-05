@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
-import React from 'react'
 import { getUserChats } from '@/lib/api/chats'
 import { useAppStore } from '@/lib/stores'
 import { cn } from '@/lib/utils'
@@ -61,16 +60,7 @@ export default function Sidebar() {
           </SheetContent>
         </Sheet>
       </div>
-      {!chats.length && appStore.selectedUser && (
-        <div
-          className="py-4 text-lg cursor-pointer"
-        >
-          <Separator className="mb-3" />
-          {appStore.selectedUser.name}
-          <Separator className="mt-3" />
-        </div>
-      )}
-      {chats.map((chat: any) => (
+      {chats?.map((chat: any) => (
         <div
           key={chat.chatId}
           className="py-4 text-lg cursor-pointer"

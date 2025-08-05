@@ -1,6 +1,7 @@
 import { useRouter } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import axios from '@/lib/axios'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Input } from './ui/input'
@@ -24,34 +25,27 @@ export default function SignIn() {
     email: string
     password: string
   }) => {
-    const response = await fetch(
-      'http://localhost:8000/api/v1/users/signin',
-      {
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    )
+    try {
+      const response = await axios.post(
+        '/users/signin',
+        data,
+      )
 
-    if (!response.ok) {
+      localStorage.setItem(
+        'yap_token',
+        response.headers.authorization?.split(' ')[1] ?? '',
+      )
+
+      await router.navigate({
+        replace: true,
+        to: '/app',
+      })
+    }
+    catch {
       toast.error(
         'Unable to sign in, please try again later.',
       )
     }
-
-    localStorage.setItem(
-      'yap_token',
-      response.headers.get('Authorization')?.split(
-        'Bearer ',
-      )[1] || '',
-    )
-
-    await router.navigate({
-      replace: true,
-      to: '/app',
-    })
   }
   return (
     <Card>
