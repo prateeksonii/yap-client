@@ -1,11 +1,11 @@
 import type { Message } from '@/lib/api/messages'
 import type { User } from '@/lib/stores'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useParams } from '@tanstack/react-router'
 import { format } from 'date-fns'
 import { Send } from 'lucide-react'
 import { sendMessage } from '@/lib/api/contacts'
 import axios from '@/lib/axios'
-import { useAppStore } from '@/lib/stores'
 import { cn } from '@/lib/utils'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -34,9 +34,24 @@ async function getChatMessages(chatId: number): Promise<Message[]> {
 }
 
 export default function Chat() {
-  const appStore = useAppStore()
-  const userId = appStore.selectedUser?.id ?? 0
-  const chatId = appStore.selectedUser?.chatId ?? 0
+  const params = useParams({ from: '/app/$chatId', shouldThrow: false })
+  const chatId = Number(params?.chatId)
+
+  // Fetch chat info to get contactId, name, etc.
+  const { data: chats = [] } = useQuery({
+    queryFn: async () => {
+      const res = await axios.get('/chats', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('yap_token')}`,
+        },
+      })
+      return res.data
+    },
+    queryKey: ['user_chats'],
+  })
+
+  const chat = chats?.find((c: any) => c.chatId === chatId)
+  const userId = chat?.contactId
 
   const { mutate } = useMutation({
     mutationFn: sendMessage,
@@ -61,7 +76,7 @@ export default function Chat() {
     const formData = new FormData(event.currentTarget)
     const message = formData.get('message') as string
     mutate({
-      contactID: appStore.selectedUser?.id ?? userId ?? 0,
+      contactID: userId ?? 0,
       message,
     })
     event.currentTarget.reset()

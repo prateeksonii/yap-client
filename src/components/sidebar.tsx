@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRouter } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import { getUserChats } from '@/lib/api/chats'
 import { useAppStore } from '@/lib/stores'
@@ -12,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 
 export default function Sidebar() {
   const appStore = useAppStore()
+  const router = useRouter()
 
   const { data: chats } = useQuery({
     queryFn: getUserChats,
@@ -64,12 +66,7 @@ export default function Sidebar() {
         <div
           key={chat.chatId}
           className="py-4 text-lg cursor-pointer"
-          onClick={() => appStore.setSelectedUser({
-            id: chat.contactId,
-            name: chat.contactName,
-            email: chat.contactEmail,
-            chatId: chat.chatId,
-          })}
+          onClick={() => router.navigate({ to: `/app/${chat.chatId}` })}
         >
           <Separator className="mb-3" />
           {chat.contactName}
