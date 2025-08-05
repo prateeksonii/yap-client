@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
+import { LogOut, Plus } from 'lucide-react'
 import { getUserChats } from '@/lib/api/chats'
 import { useAppStore } from '@/lib/stores'
 import { cn } from '@/lib/utils'
@@ -15,6 +15,11 @@ export default function Sidebar() {
   const appStore = useAppStore()
   const router = useRouter()
 
+  const handleSignOut = () => {
+    localStorage.removeItem('yap_token')
+    router.navigate({ to: '/' })
+  }
+
   const { data: chats } = useQuery({
     queryFn: getUserChats,
     queryKey: ['user_chats'],
@@ -22,11 +27,10 @@ export default function Sidebar() {
   })
 
   return (
-    <div className="shadow-lg p-4">
+    <div className="shadow-lg px-4 h-full flex flex-col">
       <h4 className="text-xl">
         <div className="text-sm text-muted-foreground">Welcome,</div>
         <div className="flex items-center gap-3">
-
           {appStore.user?.name}
           <Badge variant="outline" className="capitalize">
             <>
@@ -40,9 +44,8 @@ export default function Sidebar() {
             </>
           </Badge>
         </div>
-
       </h4>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mt-4">
         <div className="text-lg text-muted-foreground">Recent chats</div>
         <Sheet open={appStore.sheetOpen} onOpenChange={appStore.setSheetOpen}>
           <Tooltip>
@@ -62,17 +65,31 @@ export default function Sidebar() {
           </SheetContent>
         </Sheet>
       </div>
-      {chats?.map((chat: any) => (
-        <div
-          key={chat.chatId}
-          className="py-4 text-lg cursor-pointer"
-          onClick={() => router.navigate({ to: `/app/${chat.chatId}` })}
+      <div className="flex-1 overflow-y-auto mt-2">
+        {chats?.map((chat: any) => (
+          <div
+            key={chat.chatId}
+            className="py-4 text-lg cursor-pointer"
+            onClick={() => router.navigate({ to: `/app/${chat.chatId}` })}
+          >
+            <Separator className="mb-3" />
+            {chat.contactName}
+            <Separator className="mt-3" />
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 pt-4 border-t flex-shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-2 py-5 text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
+          style={{ justifyContent: 'center' }}
         >
-          <Separator className="mb-3" />
-          {chat.contactName}
-          <Separator className="mt-3" />
-        </div>
-      ))}
+          <LogOut className="w-4 h-4" />
+          Sign out
+        </Button>
+      </div>
     </div>
   )
 }
