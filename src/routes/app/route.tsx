@@ -7,7 +7,7 @@ export const Route = createFileRoute('/app')({
   loader: async (ctx) => {
     const params = new URLSearchParams()
     params.set('token', `Bearer ${localStorage.getItem('yap_token')!}`)
-    const ws = new WebSocket(`ws://localhost:8000/ws?${params}`)
+    const ws = new WebSocket(`${import.meta.env.VITE_WS_URL}?${params}`)
 
     const appStore = useAppStore.getState()
 

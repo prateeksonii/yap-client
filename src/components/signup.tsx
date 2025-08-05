@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import axios from '@/lib/axios'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Input } from './ui/input'
@@ -27,19 +28,14 @@ export default function SignUp({
     email: string
     password: string
   }) => {
-    const response = await fetch('http://localhost:8000/api/v1/users/signup', {
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    })
+    try {
+      await axios.post('/users/signup', data)
 
-    if (!response.ok) {
+      setCurrentTab('signin')
+    }
+    catch {
       toast.error('Unable to sign up, please try again later.')
     }
-
-    setCurrentTab('signin')
   }
 
   return (
