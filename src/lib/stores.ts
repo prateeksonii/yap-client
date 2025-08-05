@@ -14,8 +14,6 @@ interface AppStore {
   setUser: (user: User) => void
   status: Status
   setStatus: (status: Status) => void
-  selectedUser: (User & { chatId?: number }) | null
-  setSelectedUser: (user: User & { chatId?: number }) => void
   sheetOpen: boolean
   setSheetOpen: (open: boolean) => void
 }
@@ -26,8 +24,6 @@ export const useAppStore = create<AppStore>()(
     setUser: (user: User) => set(() => ({ user })),
     status: 'offline',
     setStatus: (status: Status) => set(() => ({ status })),
-    selectedUser: null,
-    setSelectedUser: (user: User) => set(() => ({ selectedUser: user })),
     sheetOpen: false,
     setSheetOpen: (open: boolean) => set(() => ({ sheetOpen: open })),
   })),
