@@ -34,7 +34,7 @@ async function getChatMessages(chatId: number): Promise<Message[]> {
 }
 
 export default function Chat() {
-  const params = useParams({ from: '/app/$chatId', shouldThrow: false })
+  const params = useParams({ from: '/app/$chatId' })
   const chatId = Number(params?.chatId)
 
   // Fetch chat info to get contactId, name, etc.
@@ -95,9 +95,9 @@ export default function Chat() {
   }
 
   return (
-    <div className="">
+    <div className="flex flex-col h-full gap-4">
       <div className="flex flex-col h-full gap-4">
-        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
           {user.name}
         </h2>
         <div className="flex-1 flex flex-col gap-1 justify-end">

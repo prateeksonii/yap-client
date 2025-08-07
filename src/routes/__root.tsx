@@ -1,6 +1,5 @@
 import type { MyRouterContext } from '@/lib/types'
 import { createRootRouteWithContext, isRedirect, Outlet, redirect } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { Toaster } from 'sonner'
 import axios from '@/lib/axios'
 import { useAppStore } from '@/lib/stores'
@@ -40,7 +39,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <>
       <Outlet />
-      <TanStackRouterDevtools />
+      {/* <TanStackRouterDevtools /> */}
       <Toaster />
     </>
   ),

@@ -46,13 +46,14 @@ export default function Sidebar() {
         </div>
       </h4>
       <div className="flex items-center justify-between mt-4">
-        <div className="text-lg text-muted-foreground">Recent chats</div>
+        <div className="text-lg text-muted-foreground">Chats</div>
         <Sheet open={appStore.sheetOpen} onOpenChange={appStore.setSheetOpen}>
           <Tooltip>
             <TooltipTrigger asChild>
               <SheetTrigger asChild>
-                <Button variant="ghost">
+                <Button variant="default" size="sm">
                   <Plus />
+                  Add
                 </Button>
               </SheetTrigger>
             </TooltipTrigger>

@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import Sidebar from '@/components/sidebar'
+import { AppSidebar } from '@/components/app-sidebar'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+// import Sidebar from '@/components/sidebar'
 import { useAppStore } from '@/lib/stores'
 
 export const Route = createFileRoute('/app')({
@@ -30,13 +32,22 @@ export const Route = createFileRoute('/app')({
 
 function RouteComponent() {
   return (
-    <div>
-      <div className="mx-auto h-screen container py-8">
-        <div className="h-full grid grid-cols-[300px_auto] gap-8">
-          <Sidebar />
+    <SidebarProvider
+      style={
+        {
+          '--sidebar-width': '350px',
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar />
+      <SidebarInset>
+        <header className="bg-background sticky top-0 flex shrink-0 items-center gap-2 border-b p-4">
+          <SidebarTrigger className="-ml-1" />
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4">
           <Outlet />
         </div>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
