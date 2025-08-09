@@ -1,6 +1,7 @@
 'use client'
 
 import type { User } from '@/lib/stores'
+import { useAppStore } from '@/lib/stores'
 
 import { useRouter } from '@tanstack/react-router'
 import {
@@ -35,8 +36,13 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter()
+  const appStore = useAppStore()
 
   const handleSignOut = () => {
+    // Close WebSocket connection and send logout event
+    appStore.closeWs()
+    
+    // Remove token and navigate
     localStorage.removeItem('yap_token')
     router.navigate({ to: '/' })
   }
