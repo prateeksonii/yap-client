@@ -167,7 +167,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <OnlineStatus isOnline={chat.isOnline} size="sm" />
                     </div>
                     <span className="text-xs text-muted-foreground flex-shrink-0">
-                      {formatDistanceToNow(chat.lastMessageAt, {
+                      {chat.lastMessageAt && formatDistanceToNow(chat.lastMessageAt, {
                         addSuffix: true,
                       })}
                     </span>
