@@ -6,8 +6,10 @@ import { format } from 'date-fns'
 import { Send } from 'lucide-react'
 import { sendMessage } from '@/lib/api/contacts'
 import axios from '@/lib/axios'
+import { useAppStore } from '@/lib/stores'
 import { cn } from '@/lib/utils'
 import { OnlineStatus } from './online-status'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 
@@ -36,9 +38,9 @@ async function getChatMessages(chatId: number): Promise<Message[]> {
 
 export default function Chat() {
   const params = useParams({ from: '/app/$chatId' })
+  const { user: currentUser } = useAppStore()
   const chatId = Number(params?.chatId)
 
-  // Fetch chat info to get contactId, name, etc.
   const { data: chats = [] } = useQuery({
     queryFn: async () => {
       const res = await axios.get('/chats', {
@@ -65,7 +67,6 @@ export default function Chat() {
     enabled: !!userId,
   })
 
-  // Use online status from chat data if available, otherwise from user data
   const userOnlineStatus = chat?.isOnline ?? user?.isOnline
 
   const { data: messages, isLoading: isLoadingMessages, isError: isErrorMessages }
@@ -98,46 +99,73 @@ export default function Chat() {
     return <div>Error</div>
   }
 
-  return (
-    <div className="flex flex-col h-full gap-4">
-      <div className="flex flex-col h-full gap-4">
-        <div className="flex items-center gap-3">
-          <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-            {user.name}
-          </h2>
-          <OnlineStatus isOnline={userOnlineStatus} showLabel />
-        </div>
-        <div className="flex-1 flex flex-col gap-1 justify-end">
-          {
-            messages?.map((message, index) => (
-              <div key={message.id}>
-                {(index === 0 || message.senderId !== messages[index - 1].senderId)
-                  ? message.senderId === userId
-                    ? <div className="text-left text-xs text-muted-foreground">{user.name}</div>
-                    : <div className="text-right text-xs text-muted-foreground">You</div>
-                  : null}
-                <div className={cn('flex items-center gap-3', message.senderId === userId ? '' : 'flex-row-reverse')}>
-                  <div
-                    className={cn(
-                      'bg-blue-500 text-white py-1 rounded-md w-max px-4',
-                    )}
-                  >
-                    {message.content}
-                  </div>
-                  <span className="text-xs">{format(message.createdAt, 'HH:mm')}</span>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-        <form className="flex items-center gap-3" onSubmit={handleSubmit}>
-          <Input name="message" placeholder="Say hi!" className="py-5" />
-          <Button className="py-5 flex items-center gap-2">
-            <Send />
-            Send
-          </Button>
-        </form>
+  const ChatHeader = () => (
+    <header className="flex items-center gap-3 p-4">
+      <Avatar className="h-10 w-10">
+        <AvatarFallback>{user.name[0]}</AvatarFallback>
+      </Avatar>
+      <div>
+        <h2 className="text-xl font-semibold">{user.name}</h2>
+        <OnlineStatus isOnline={userOnlineStatus} showLabel />
       </div>
+    </header>
+  )
+
+  const ChatForm = () => (
+    <footer className="border-t p-4">
+      <form className="flex items-center gap-3" onSubmit={handleSubmit}>
+        <Input name="message" placeholder="Type a message..." className="py-5" />
+        <Button className="flex items-center gap-2 py-5">
+          <Send />
+          Send
+        </Button>
+      </form>
+    </footer>
+  )
+
+  if (!messages || messages.length === 0) {
+    return (
+      <div className="flex h-full flex-col bg-background text-foreground">
+        <ChatHeader />
+        <main className="grid flex-1 place-items-center">
+          <div className="text-center text-muted-foreground">
+            No messages yet. Start the conversation!
+          </div>
+        </main>
+        <ChatForm />
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex h-full flex-col bg-background text-foreground">
+      <ChatHeader />
+      <main className="flex-1 space-y-4 overflow-y-auto p-4">
+        {messages?.map((message) => {
+          const isMe = message.senderId !== userId
+          return (
+            <div key={message.id} className={cn('flex items-start gap-3', isMe ? 'flex-row-reverse' : '')}>
+              <Avatar className="h-8 w-8">
+                <AvatarFallback>{(isMe ? currentUser?.name : user.name)?.[0]}</AvatarFallback>
+              </Avatar>
+              <div className={cn('flex flex-col gap-1', isMe ? 'items-end' : 'items-start')}>
+                <div
+                  className={cn(
+                    'max-w-xs rounded-xl p-2 px-3',
+                    isMe
+                      ? 'rounded-br-none bg-primary text-primary-foreground'
+                      : 'rounded-bl-none bg-muted text-muted-foreground',
+                  )}
+                >
+                  <p className="text-sm">{message.content}</p>
+                </div>
+                <span className="text-xs text-muted-foreground">{format(message.createdAt, 'HH:mm')}</span>
+              </div>
+            </div>
+          )
+        })}
+      </main>
+      <ChatForm />
     </div>
   )
 }
