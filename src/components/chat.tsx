@@ -9,7 +9,7 @@ import { sendMessage } from '@/lib/api/contacts'
 import axios from '@/lib/axios'
 import { useAppStore } from '@/lib/stores'
 import { cn } from '@/lib/utils'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Avatar, AvatarFallback } from './ui/avatar'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 
