@@ -118,8 +118,8 @@ export default function Chat() {
   }
 
   const ChatForm = () => (
-    <footer className="border-t p-4">
-      <form className="flex items-center gap-3" onSubmit={handleSubmit}>
+    <footer className="border-t h-16 grid place-items-center">
+      <form className="w-full flex items-center gap-3 px-4" onSubmit={handleSubmit}>
         <Input name="message" placeholder="Type a message..." className="py-5" />
         <Button className="flex items-center gap-2 py-5">
           <Send />
@@ -143,8 +143,8 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex h-full flex-col bg-background text-foreground">
-      <main className="flex flex-1 flex-col-reverse space-y-4 space-y-reverse overflow-y-auto p-4">
+    <div className="flex flex-col bg-background text-foreground">
+      <main className="h-[calc(100vh-8rem)] flex flex-col-reverse space-y-4 space-y-reverse overflow-y-scroll p-4">
         {messages?.slice().reverse().map((message) => {
           const isMe = message.senderId !== userId
           return (
@@ -169,7 +169,7 @@ export default function Chat() {
           )
         })}
       </main>
-      <ChatForm />
+        <ChatForm />
     </div>
   )
 }
