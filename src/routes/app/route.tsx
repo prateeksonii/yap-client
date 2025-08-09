@@ -90,12 +90,34 @@ export const Route = createFileRoute('/app')({
               appStore.addUnreadChat(data.chat_id)
             }
 
-            // Refetch messages for the chat and the chat list
+            // Optimistically update the chat list
+            ctx.context.queryClient.setQueryData(['user_chats'], (oldData: any[] | undefined) => {
+              if (!oldData) return []
+
+              const chatIndex = oldData.findIndex(chat => chat.chatId === data.chat_id)
+
+              if (chatIndex === -1) {
+                // If chat is not in the list, refetch the list to get the new chat.
+                ctx.context.queryClient.refetchQueries({ queryKey: ['user_chats'] })
+                return oldData
+              }
+
+              const updatedChat = {
+                ...oldData[chatIndex],
+                lastMessage: data.content,
+                lastMessageAt: data.created_at,
+              }
+
+              // Remove the updated chat from its old position and add it to the top.
+              const newData = oldData.filter(chat => chat.chatId !== data.chat_id)
+              newData.unshift(updatedChat)
+
+              return newData
+            })
+
+            // Refetch messages for the chat that received the new message
             ctx.context.queryClient.fetchQuery({
               queryKey: ['chat_messages', data.chat_id],
-            })
-            ctx.context.queryClient.refetchQueries({
-              queryKey: ['user_chats'],
             })
             break
 
