@@ -4,4 +4,5 @@ export interface Message {
   senderId: number
   chatId: number
   createdAt: Date
+  isOnline?: boolean
 }

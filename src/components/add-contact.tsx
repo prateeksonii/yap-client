@@ -6,6 +6,7 @@ import axios from '@/lib/axios'
 import { useAppStore } from '@/lib/stores'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import { OnlineStatus } from './online-status'
 import { Separator } from './ui/separator'
 import { SheetHeader, SheetTitle } from './ui/sheet'
 import { Skeleton } from './ui/skeleton'
@@ -93,8 +94,11 @@ export default function AddContact() {
         {!isLoading && !!debouncedInput && data && data.map((user: any) => (
           <React.Fragment key={user.id}>
             <div className="flex items-center justify-between py-4">
-              <div>
-                <div className="scroll-m-20 text-lg font-semibold tracking-tight">{user.name}</div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <div className="scroll-m-20 text-lg font-semibold tracking-tight">{user.name}</div>
+                  <OnlineStatus isOnline={user.isOnline} size="sm" />
+                </div>
                 <div className="text-muted-foreground text-sm">{user.email}</div>
               </div>
               <div>

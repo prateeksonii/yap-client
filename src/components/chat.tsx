@@ -7,6 +7,7 @@ import { Send } from 'lucide-react'
 import { sendMessage } from '@/lib/api/contacts'
 import axios from '@/lib/axios'
 import { cn } from '@/lib/utils'
+import { OnlineStatus } from './online-status'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 
@@ -64,6 +65,9 @@ export default function Chat() {
     enabled: !!userId,
   })
 
+  // Use online status from chat data if available, otherwise from user data
+  const userOnlineStatus = chat?.isOnline ?? user?.isOnline
+
   const { data: messages, isLoading: isLoadingMessages, isError: isErrorMessages }
     = useQuery({
       queryFn: () => getChatMessages(chatId!),
@@ -97,9 +101,12 @@ export default function Chat() {
   return (
     <div className="flex flex-col h-full gap-4">
       <div className="flex flex-col h-full gap-4">
-        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          {user.name}
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+            {user.name}
+          </h2>
+          <OnlineStatus isOnline={userOnlineStatus} showLabel />
+        </div>
         <div className="flex-1 flex flex-col gap-1 justify-end">
           {
             messages?.map((message, index) => (

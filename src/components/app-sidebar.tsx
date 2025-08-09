@@ -19,7 +19,9 @@ import {
 } from '@/components/ui/sidebar'
 import { getUserChats } from '@/lib/api/chats'
 import { useAppStore } from '@/lib/stores'
+import type { Chat } from '@/lib/types'
 import AddContact from './add-contact'
+import { OnlineStatus } from './online-status'
 import { Button } from './ui/button'
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
@@ -46,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     queryFn: getUserChats,
     queryKey: ['user_chats'],
     initialData: [],
-  })
+  }) as { data: Chat[] }
 
   return (
     <Sidebar
@@ -116,8 +118,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <Sidebar collapsible="none" className="flex-1 md:flex">
         <SidebarHeader className="gap-3.5 border-b p-4">
           <div className="flex w-full items-center justify-between">
-            <div className="text-foreground text-base font-medium">
-              Chats
+            <div className="flex items-center gap-2">
+              <div className="text-foreground text-base font-medium">
+                Chats
+              </div>
+              <OnlineStatus isOnline={appStore.status === 'online'} size="sm" showLabel />
             </div>
             <Sheet open={appStore.sheetOpen} onOpenChange={appStore.setSheetOpen}>
               <Tooltip>
@@ -146,19 +151,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {chats.map((chat: any) => (
+              {chats.map((chat) => (
                 <Link
                   to="/app/$chatId"
                   params={{
-                    chatId: chat.chatId,
+                    chatId: chat.chatId.toString(),
                   }}
                   viewTransition={true}
                   key={chat.chatId}
                   className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight whitespace-nowrap last:border-b-0"
                 >
                   <div className="flex w-full items-center gap-2">
-                    <span className="text-ellipsis text-base">{chat.contactName}</span>
-                    <span className="ml-auto text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="text-ellipsis text-base">{chat.contactName}</span>
+                      <OnlineStatus isOnline={chat.isOnline} size="sm" />
+                    </div>
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
                       {formatDistanceToNow(chat.lastMessageAt, {
                         addSuffix: true,
                       })}
