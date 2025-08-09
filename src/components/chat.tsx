@@ -38,7 +38,12 @@ async function getChatMessages(chatId: number): Promise<Message[]> {
 
 export default function Chat() {
   const params = useParams({ from: '/app/$chatId' })
-  const { user: currentUser, setActiveContact } = useAppStore()
+  const {
+    user: currentUser,
+    setActiveContact,
+    setActiveChatId,
+    removeUnreadChat,
+  } = useAppStore()
   const chatId = Number(params?.chatId)
 
   const { data: chats = [] } = useQuery({
@@ -72,12 +77,15 @@ export default function Chat() {
   React.useEffect(() => {
     if (user?.name) {
       setActiveContact({ name: user.name, isOnline: userOnlineStatus })
+      setActiveChatId(chatId)
+      removeUnreadChat(chatId)
     }
 
     return () => {
       setActiveContact(null)
+      setActiveChatId(null)
     }
-  }, [user?.name, userOnlineStatus, setActiveContact])
+  }, [user?.name, userOnlineStatus, setActiveContact, chatId, setActiveChatId, removeUnreadChat])
 
   const { data: messages, isLoading: isLoadingMessages, isError: isErrorMessages }
     = useQuery({

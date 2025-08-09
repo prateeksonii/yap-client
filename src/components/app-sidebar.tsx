@@ -39,7 +39,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const appStore = useAppStore()
+  const { user, unreadChats, sheetOpen, setSheetOpen, status } = useAppStore()
 
   const [activeItem, setActiveItem] = React.useState(data.navMain[0])
   const { setOpen } = useSidebar()
@@ -89,13 +89,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       }}
                       onClick={() => {
                         setActiveItem(item)
-                        // const mail = data.mails.sort(() => Math.random() - 0.5)
-                        // setMails(
-                        //   mail.slice(
-                        //     0,
-                        //     Math.max(5, Math.floor(Math.random() * 10) + 1),
-                        //   ),
-                        // )
                         setOpen(true)
                       }}
                       isActive={activeItem?.title === item.title}
@@ -111,7 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          {appStore.user && <NavUser user={appStore.user} />}
+          {user && <NavUser user={user} />}
         </SidebarFooter>
       </Sidebar>
 
@@ -122,9 +115,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <div className="text-foreground text-base font-medium">
                 Chats
               </div>
-              <OnlineStatus isOnline={appStore.status === 'online'} size="sm" showLabel />
+              <OnlineStatus isOnline={status === 'online'} size="sm" showLabel />
             </div>
-            <Sheet open={appStore.sheetOpen} onOpenChange={appStore.setSheetOpen}>
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <SheetTrigger asChild>
@@ -146,35 +139,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {chats.map((chat) => (
-                <Link
-                  to="/app/$chatId"
-                  params={{
-                    chatId: chat.chatId.toString(),
-                  }}
-                  viewTransition={true}
-                  key={chat.chatId}
-                  className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight whitespace-nowrap last:border-b-0"
-                  activeProps={{
-                    className: 'bg-sidebar-accent text-sidebar-accent-foreground',
-                  }}
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-ellipsis text-base">{chat.contactName}</span>
-                      <OnlineStatus isOnline={chat.isOnline} size="sm" />
+              {chats.map((chat) => {
+                const isUnread = unreadChats.includes(chat.chatId)
+                return (
+                  <Link
+                    to="/app/$chatId"
+                    params={{
+                      chatId: chat.chatId.toString(),
+                    }}
+                    viewTransition={true}
+                    key={chat.chatId}
+                    className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight whitespace-nowrap last:border-b-0"
+                    activeProps={{
+                      className: 'bg-sidebar-accent text-sidebar-accent-foreground',
+                    }}
+                  >
+                    <div className="flex w-full items-center gap-2">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-ellipsis text-base">{chat.contactName}</span>
+                        <OnlineStatus isOnline={chat.isOnline} size="sm" />
+                      </div>
+                      {isUnread && <div className="h-2 w-2 rounded-full bg-primary" />}
+                      <span className="text-xs text-muted-foreground flex-shrink-0">
+                        {chat.lastMessageAt && formatDistanceToNow(chat.lastMessageAt, {
+                          addSuffix: true,
+                        })}
+                      </span>
                     </div>
-                    <span className="text-xs text-muted-foreground flex-shrink-0">
-                      {chat.lastMessageAt && formatDistanceToNow(chat.lastMessageAt, {
-                        addSuffix: true,
-                      })}
+                    <span className="line-clamp-1 text-ellipsis w-[260px] text-sm whitespace-break-spaces">
+                      {chat.lastMessage}
                     </span>
-                  </div>
-                  <span className="line-clamp-1 text-ellipsis w-[260px] text-sm whitespace-break-spaces">
-                    {chat.lastMessage}
-                  </span>
-                </Link>
-              ))}
+                  </Link>
+                )
+              })}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>

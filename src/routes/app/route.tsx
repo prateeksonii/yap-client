@@ -79,11 +79,18 @@ export const Route = createFileRoute('/app')({
     ws.addEventListener('message', (event) => {
       try {
         const data = JSON.parse(event.data)
+        const appStore = useAppStore.getState()
 
         // Handle different message types
         switch (data.type) {
           case 'new_message':
-            // Handle new message
+            // If the message is not from the current user and not for the currently open chat,
+            // mark it as unread.
+            if (data.sender_id !== appStore.user?.id && data.chat_id !== appStore.activeChatId) {
+              appStore.addUnreadChat(data.chat_id)
+            }
+
+            // Refetch messages for the chat and the chat list
             ctx.context.queryClient.fetchQuery({
               queryKey: ['chat_messages', data.chat_id],
             })

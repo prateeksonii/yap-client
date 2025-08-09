@@ -29,6 +29,11 @@ interface AppStore {
   sendWsMessage: (message: any) => void
   activeContact: ActiveContact | null
   setActiveContact: (contact: ActiveContact | null) => void
+  activeChatId: number | null
+  setActiveChatId: (chatId: number | null) => void
+  unreadChats: number[]
+  addUnreadChat: (chatId: number) => void
+  removeUnreadChat: (chatId: number) => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -69,5 +74,12 @@ export const useAppStore = create<AppStore>()(
     }),
     activeContact: null,
     setActiveContact: (contact: ActiveContact | null) => set(() => ({ activeContact: contact })),
+    activeChatId: null,
+    setActiveChatId: (chatId: number | null) => set(() => ({ activeChatId: chatId })),
+    unreadChats: [],
+    addUnreadChat: (chatId: number) => set(state => ({
+      unreadChats: state.unreadChats.includes(chatId) ? state.unreadChats : [...state.unreadChats, chatId]
+    })),
+    removeUnreadChat: (chatId: number) => set(state => ({ unreadChats: state.unreadChats.filter(id => id !== chatId) })),
   })),
 )
