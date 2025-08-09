@@ -6,6 +6,12 @@ export interface User {
   name: string
   email: string
   isOnline?: boolean
+  avatarUrl?: string
+}
+
+interface ActiveContact {
+  name: string
+  isOnline: boolean
 }
 
 type Status = 'online' | 'offline'
@@ -21,6 +27,8 @@ interface AppStore {
   setWs: (ws: WebSocket | null) => void
   closeWs: () => void
   sendWsMessage: (message: any) => void
+  activeContact: ActiveContact | null
+  setActiveContact: (contact: ActiveContact | null) => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -59,5 +67,7 @@ export const useAppStore = create<AppStore>()(
       }
       return state
     }),
+    activeContact: null,
+    setActiveContact: (contact: ActiveContact | null) => set(() => ({ activeContact: contact })),
   })),
 )

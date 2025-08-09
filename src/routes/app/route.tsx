@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { AppSidebar } from '@/components/app-sidebar'
+import { OnlineStatus } from '@/components/online-status'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 // import Sidebar from '@/components/sidebar'
 import { useAppStore } from '@/lib/stores'
@@ -10,19 +11,19 @@ function handleOnlineStatusUpdate(queryClient: QueryClient, data: any) {
   const isOnline = data.type === 'user_online'
   const userId = data.userId
   const userName = data.userName
-  
+
   // Validate required data
   if (!userId) {
     console.error('Missing userId in online status update:', data)
     return
   }
-  
+
   console.log(`User ${userName || userId} (${userId}) is now ${isOnline ? 'online' : 'offline'}`)
-  
+
   // Update the user chats query to reflect the new online status
   queryClient.setQueryData(['user_chats'], (oldData: any) => {
     if (!oldData) return oldData
-    
+
     return oldData.map((chat: any) => {
       // Check if this chat is with the user whose status changed
       if (chat.contactId === userId) {
@@ -34,11 +35,11 @@ function handleOnlineStatusUpdate(queryClient: QueryClient, data: any) {
       return chat
     })
   })
-  
+
   // Also update any individual user queries that might be cached
   queryClient.setQueryData(['user_by_id', userId], (oldData: any) => {
     if (!oldData) return oldData
-    
+
     return {
       ...oldData,
       isOnline: isOnline
@@ -78,7 +79,7 @@ export const Route = createFileRoute('/app')({
     ws.addEventListener('message', (event) => {
       try {
         const data = JSON.parse(event.data)
-        
+
         // Handle different message types
         switch (data.type) {
           case 'message':
@@ -87,14 +88,14 @@ export const Route = createFileRoute('/app')({
               queryKey: ['chat_messages', data.chat_id],
             })
             break
-            
+
           case 'user_online':
           case 'user_offline':
             // Handle online status updates
             console.log('Online status update:', data)
             handleOnlineStatusUpdate(ctx.context.queryClient, data)
             break
-            
+
           default:
             // Handle legacy message format (no type field)
             if (data.chat_id) {
@@ -128,6 +129,7 @@ export const Route = createFileRoute('/app')({
 })
 
 function RouteComponent() {
+  const { activeContact } = useAppStore()
   return (
     <SidebarProvider
       style={
@@ -140,8 +142,14 @@ function RouteComponent() {
       <SidebarInset>
         <header className="bg-background sticky top-0 flex shrink-0 items-center gap-2 border-b p-4">
           <SidebarTrigger className="-ml-1" />
+          {activeContact && (
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-semibold">{activeContact.name}</h2>
+              <OnlineStatus isOnline={activeContact.isOnline} showLabel />
+            </div>
+          )}
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
+        <div className="h-[calc(100dvh-6rem)] flex-1 flex-col gap-4 p-4">
           <Outlet />
         </div>
       </SidebarInset>

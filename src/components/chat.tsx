@@ -8,10 +8,10 @@ import { sendMessage } from '@/lib/api/contacts'
 import axios from '@/lib/axios'
 import { useAppStore } from '@/lib/stores'
 import { cn } from '@/lib/utils'
-import { OnlineStatus } from './online-status'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import { useEffect } from 'react'
 
 async function getUserById(id: number): Promise<User> {
   const res = await axios.get(`/users/${id}`, {
@@ -38,7 +38,7 @@ async function getChatMessages(chatId: number): Promise<Message[]> {
 
 export default function Chat() {
   const params = useParams({ from: '/app/$chatId' })
-  const { user: currentUser } = useAppStore()
+  const { user: currentUser, setActiveContact } = useAppStore()
   const chatId = Number(params?.chatId)
 
   const { data: chats = [] } = useQuery({
@@ -68,6 +68,16 @@ export default function Chat() {
   })
 
   const userOnlineStatus = chat?.isOnline ?? user?.isOnline
+
+  useEffect(() => {
+    if (user?.name) {
+      setActiveContact({ name: user.name, isOnline: userOnlineStatus })
+    }
+
+    return () => {
+      setActiveContact(null)
+    }
+  }, [user?.name, userOnlineStatus])
 
   const { data: messages, isLoading: isLoadingMessages, isError: isErrorMessages }
     = useQuery({
@@ -99,20 +109,8 @@ export default function Chat() {
     return <div>Error</div>
   }
 
-  const ChatHeader = () => (
-    <header className="flex items-center gap-3 p-4">
-      <Avatar className="h-10 w-10">
-        <AvatarFallback>{user.name[0]}</AvatarFallback>
-      </Avatar>
-      <div>
-        <h2 className="text-xl font-semibold">{user.name}</h2>
-        <OnlineStatus isOnline={userOnlineStatus} showLabel />
-      </div>
-    </header>
-  )
-
   const ChatForm = () => (
-    <footer className="border-t p-4">
+    <footer className="p-4">
       <form className="flex items-center gap-3" onSubmit={handleSubmit}>
         <Input name="message" placeholder="Type a message..." className="py-5" />
         <Button className="flex items-center gap-2 py-5">
@@ -126,7 +124,6 @@ export default function Chat() {
   if (!messages || messages.length === 0) {
     return (
       <div className="flex h-full flex-col bg-background text-foreground">
-        <ChatHeader />
         <main className="grid flex-1 place-items-center">
           <div className="text-center text-muted-foreground">
             No messages yet. Start the conversation!
@@ -139,7 +136,6 @@ export default function Chat() {
 
   return (
     <div className="flex h-full flex-col bg-background text-foreground">
-      <ChatHeader />
       <main className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages?.map((message) => {
           const isMe = message.senderId !== userId
