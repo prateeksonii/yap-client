@@ -89,6 +89,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       }}
                       onClick={() => {
                         setActiveItem(item)
+                        // const mail = data.mails.sort(() => Math.random() - 0.5)
+                        // setMails(
+                        //   mail.slice(
+                        //     0,
+                        //     Math.max(5, Math.floor(Math.random() * 10) + 1),
+                        //   ),
+                        // )
                         setOpen(true)
                       }}
                       isActive={activeItem?.title === item.title}
@@ -148,6 +155,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   viewTransition={true}
                   key={chat.chatId}
                   className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight whitespace-nowrap last:border-b-0"
+                  activeProps={{
+                    className: 'bg-sidebar-accent text-sidebar-accent-foreground',
+                  }}
                 >
                   <div className="flex w-full items-center gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
