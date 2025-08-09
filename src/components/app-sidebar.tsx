@@ -89,13 +89,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       }}
                       onClick={() => {
                         setActiveItem(item)
-                        // const mail = data.mails.sort(() => Math.random() - 0.5)
-                        // setMails(
-                        //   mail.slice(
-                        //     0,
-                        //     Math.max(5, Math.floor(Math.random() * 10) + 1),
-                        //   ),
-                        // )
                         setOpen(true)
                       }}
                       isActive={activeItem?.title === item.title}
@@ -141,12 +134,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <AddContact />
               </SheetContent>
             </Sheet>
-            {/* <Label className="flex items-center gap-2 text-sm">
-              <span>Unreads</span>
-              <Switch className="shadow-none" />
-            </Label> */}
           </div>
-          {/* <SidebarInput placeholder="Type to search..." /> */}
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">

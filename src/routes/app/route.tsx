@@ -82,17 +82,18 @@ export const Route = createFileRoute('/app')({
 
         // Handle different message types
         switch (data.type) {
-          case 'message':
+          case 'new_message':
             // Handle new message
             ctx.context.queryClient.fetchQuery({
               queryKey: ['chat_messages', data.chat_id],
+            })
+            ctx.context.queryClient.refetchQueries({
+              queryKey: ['user_chats'],
             })
             break
 
           case 'user_online':
           case 'user_offline':
-            // Handle online status updates
-            console.log('Online status update:', data)
             handleOnlineStatusUpdate(ctx.context.queryClient, data)
             break
 

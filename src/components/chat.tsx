@@ -84,7 +84,6 @@ export default function Chat() {
       queryFn: () => getChatMessages(chatId!),
       queryKey: ['chat_messages', chatId],
       enabled: !!chatId,
-      refetchInterval: 1000,
     })
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
