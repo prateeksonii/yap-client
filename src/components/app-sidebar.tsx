@@ -1,6 +1,7 @@
+import type { Chat } from '@/lib/types'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
 
+import { Link } from '@tanstack/react-router'
 import { formatDistanceToNow } from 'date-fns'
 import { Command, Inbox, Plus } from 'lucide-react'
 import * as React from 'react'
@@ -19,7 +20,6 @@ import {
 } from '@/components/ui/sidebar'
 import { getUserChats } from '@/lib/api/chats'
 import { useAppStore } from '@/lib/stores'
-import type { Chat } from '@/lib/types'
 import AddContact from './add-contact'
 import { OnlineStatus } from './online-status'
 import { Button } from './ui/button'
