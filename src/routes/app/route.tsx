@@ -11,6 +11,7 @@ function handleOnlineStatusUpdate(queryClient: QueryClient, data: any) {
   const isOnline = data.type === 'user_online'
   const userId = data.userId
   const userName = data.userName
+  
 
   // Validate required data
   if (!userId) {
